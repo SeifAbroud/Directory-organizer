@@ -2,6 +2,7 @@ import os
 import shutil
 import zipfile
 
+
 def create_directories(directory):  # check if  dir already exists
     dirs=["psd", "image", "pdf" , "ai" , "txt" , "unsorted"]
     for d in dirs :
@@ -18,7 +19,7 @@ def extract_zip_files(directory, extractedlist):  # extract zip files in found b
             extractedlist.append(zip_file_path)
             with zipfile.ZipFile(zip_file_path, 'r') as zip_ref:
                 zip_ref.extractall(directory)
-            print(f"Extracted {filename} in {directory}")
+            print(f"Extracted {filename}")
 
 
 def delete_zip(extractedlist): # delete extracted zip files
@@ -33,6 +34,7 @@ def delete_zip(extractedlist): # delete extracted zip files
 
 
 def organize_files(directory):  # organize files in main and all directories and manage existing files
+    nbr = 0
     for root, dirs, files in os.walk(directory):
         for filename in files:
             targeted_dir = ""
@@ -49,13 +51,15 @@ def organize_files(directory):  # organize files in main and all directories and
                 targeted_dir = os.path.join(directory,"txt")
             else:
                 targeted_dir= os.path.join(directory,"unsorted")
-                #print(f"Ignored {filename}.")
             if targeted_dir:
                 sourcefile = os.path.join(root, filename)
                 try:
                     shutil.move(sourcefile, targeted_dir)
+                    nbr += 1
                 except:
-                    print(f"{filename} moved to {targeted_dir}")
+                    pass
+                #print(f"{filename} moved to {targeted_dir}") #show location of all files moved
+    print(f"moved {nbr} files ")
 def delete_url_files (directory) :
     for root, dirs, files in os.walk(directory):
         for file in files:
@@ -63,7 +67,6 @@ def delete_url_files (directory) :
                 filepath = os.path.join(root,file)
                 os.remove(filepath)
                 print(f"deleted {file}")
-
 
 
 def delete_empty_folders(directory):  # delete remaining empty folders
@@ -83,9 +86,13 @@ def delete_empty_folders(directory):  # delete remaining empty folders
                 except :
                     pass
                 print(f"Deleted folder: {dir_name}")
-#directory = "folderexample"
-directory = str(input("enter Directory path"))
+
+
+directory = str(input("enter Directory path : "))
+if(directory[0]=='"'): # check if the path start with quotes mark or not
+    directory=directory[1:-1] # to remove quotation marks when u copy path directly
 list = []
+print(directory)
 create_directories(directory)
 extract_zip_files(directory, list)
 delete_zip(list)
